@@ -2,9 +2,14 @@ import requests
 import time
 from bs4 import BeautifulSoup
 
+PAGES = 20
+BOARD_NAME = "Soft_Job"
+CONDITION = 50
+
 NOT_EXIST = BeautifulSoup('<a>本文已被刪除</a>', 'lxml').a
 
-url = 'https://www.ptt.cc/bbs/Soft_Job/index.html'
+url = 'https://www.ptt.cc/bbs/' + BOARD_NAME + '/index.html'
+
 response = requests.get(url)
 soup = BeautifulSoup(response.text, 'lxml')
 
@@ -13,11 +18,12 @@ previous_page = max_index[1].get('href')
 previous_index = int(previous_page.split('index')[1].split('.')[0])
 articles = soup.find_all('div', 'r-ent')
 
-PAGES = 20
+print('Start crawling ptt %s board from page %d to %d' %
+      (BOARD_NAME, previous_index+1, previous_index+1 - PAGES))
 
-for index in range(previous_index+1, previous_index - PAGES, -1):
+for index in range(previous_index+1, previous_index+1 - PAGES, -1):
     time.sleep(0.01)
-    url = 'https://www.ptt.cc/bbs/Soft_Job/index'+str(index)+'.html'
+    url = 'https://www.ptt.cc/bbs/'+BOARD_NAME+'/index'+str(index)+'.html'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     articles = soup.find_all('div', 'r-ent')
